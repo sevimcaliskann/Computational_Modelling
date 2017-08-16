@@ -19,6 +19,7 @@
 
 #include <WROBOT\WRobot.h>
 #include <WROBOT\WRobot.cpp>
+#include <SOIL.h>
 
 /******************************************************************************/
 
@@ -72,7 +73,63 @@ WROBOT_TYPE robot_type;
 matrix textpos(3,1);
 char text[128];
 int hitcnt = 0;
+
+
+GLfloat xrot;
+GLfloat yrot;
+GLfloat zrot;
+
+GLuint texture[1];
 /******************************************************************************/
+namespace textureCall{
+	static int LoadGLTexture() {
+		glGenTextures(1, texture);
+		texture[0] = SOIL_load_OGL_texture("img_test.bmp", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
+		if (texture[0] == 0)
+			return false;
+		glBindTexture(GL_TEXTURE_2D, texture[0]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		return true;
+	}
+}
+bool isImageLoaded = false;
+
+void mouse_wheel_callback(int button, int dir, int x, int y) {
+	if(dir>0){
+		xrot += 0.3f;
+		yrot += 0.2f;
+		zrot += 0.4f;
+	}
+	else{
+		xrot -= 0.3f;
+		yrot -= 0.2f;
+		zrot -= 0.4f;
+	}
+	glutPostRedisplay();
+}
+
+void key_callback(unsigned char key, int x, int y) {
+	switch (key) {
+	case 27: {
+		exit(0);
+		break;
+	}
+	case 'w': {
+		xrot += 0.3f;
+		yrot += 0.2f;
+		zrot += 0.4f;
+		break;
+	}
+	case 's': {
+		xrot -= 0.3f;
+		yrot -= 0.2f;
+		zrot -= 0.4f;
+		break;
+	}
+	}
+	glutPostRedisplay();
+}
 
 void reset_ball( int j )
 {
@@ -318,7 +375,7 @@ float s=size*0.015;
 
 void Draw( void )
 {    
-int  j;
+//int  j;
 
     // Clear "stereo" graphics buffers...
     GRAPHICS_ClearStereo();
@@ -334,25 +391,72 @@ int  j;
 
 
         // Cursor ball...
-        GRAPHICS_Sphere(&rpos,RadiusCursor,GREEN);
+        //GRAPHICS_Sphere(&rpos,RadiusCursor,GREEN);
       
         // Playing balls...
         if( GameStarted )
         {
-            set_color(RED);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glLoadIdentity();
+			glTranslatef(0.0f, 0.0f, -5.0f);
+			glRotatef(xrot, 1.0f, 0.0f, 0.0f);
+			glRotatef(yrot, 0.0f, 1.0f, 0.0f);
+			glRotatef(zrot, 0.0f, 0.0f, 1.0f);
+
+			glBindTexture(GL_TEXTURE_2D, texture[0]);
+			glBegin(GL_QUADS);
+			// Front Face
+			glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f, 1.0f);  // Bottom Left Of The Texture and Quad
+			glTexCoord2f(1.0f, 0.0f); glVertex3f(1.0f, -1.0f, 1.0f);  // Bottom Right Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f(1.0f, 1.0f, 1.0f);  // Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f, 1.0f, 1.0f);  // Top Left Of The Texture and Quad
+																	  // Back Face
+			glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);  // Bottom Right Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f, 1.0f, -1.0f);  // Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f(1.0f, 1.0f, -1.0f);  // Top Left Of The Texture and Quad
+			glTexCoord2f(0.0f, 0.0f); glVertex3f(1.0f, -1.0f, -1.0f);  // Bottom Left Of The Texture and Quad
+																	   // Top Face
+			glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f, 1.0f, -1.0f);  // Top Left Of The Texture and Quad
+			glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, 1.0f, 1.0f);  // Bottom Left Of The Texture and Quad
+			glTexCoord2f(1.0f, 0.0f); glVertex3f(1.0f, 1.0f, 1.0f);  // Bottom Right Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f(1.0f, 1.0f, -1.0f);  // Top Right Of The Texture and Quad
+																	  // Bottom Face
+			glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f, -1.0f, -1.0f);  // Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f(1.0f, -1.0f, -1.0f);  // Top Left Of The Texture and Quad
+			glTexCoord2f(0.0f, 0.0f); glVertex3f(1.0f, -1.0f, 1.0f);  // Bottom Left Of The Texture and Quad
+			glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f, 1.0f);  // Bottom Right Of The Texture and Quad
+																	   // Right face
+			glTexCoord2f(1.0f, 0.0f); glVertex3f(1.0f, -1.0f, -1.0f);  // Bottom Right Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f(1.0f, 1.0f, -1.0f);  // Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f(1.0f, 1.0f, 1.0f);  // Top Left Of The Texture and Quad
+			glTexCoord2f(0.0f, 0.0f); glVertex3f(1.0f, -1.0f, 1.0f);  // Bottom Left Of The Texture and Quad
+																	  // Left Face
+			glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);  // Bottom Left Of The Texture and Quad
+			glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f, 1.0f);  // Bottom Right Of The Texture and Quad;*/
+			
+			
+			
+			/*set_color(RED);
 
             for(j=1;j<=BALLS;j++)
             {
                 GRAPHICS_Sphere(&pos[j],RadiusBall,RED);
-            }
+            }*/
         }
 
-        // Target sphere...
-        GRAPHICS_Sphere(&targ,RadiusTarget,YELLOW,0.6);
+        // Target sphere
+			glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f, 1.0f, 1.0f);  // Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f, 1.0f, -1.0f);  // Top Left Of The Texture and Quad
+			glEnd();
+			glFlush();
+			/*xrot += 0.3f;
+			yrot += 0.2f;
+			zrot += 0.4f;*/
+        //GRAPHICS_Sphere(&targ,RadiusTarget,YELLOW,0.6);
 
 		// Print score
-		sprintf(text,"Score: %d",hitcnt);
-		GraphicsDisplayText(text,0.4,textpos);
+		//sprintf(text,"Score: %d",hitcnt);
+		//GraphicsDisplayText(text,0.4,textpos);
 
 		if(display_postext)
 		{
@@ -377,7 +481,8 @@ if( TIMER_EveryHz(2.0) )
           rrforce(3,1));
 } */
 
-    swapbuffers();
+    //swapbuffers();
+	glutSwapBuffers();
 }
 
 /******************************************************************************/
@@ -622,10 +727,33 @@ BOOL Exit;
         WROBOT_Close(robot_id, robot_type);
         ExitProgram();
     }
+
+	//glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+	//GLFWwindow *window = glfwCreateWindow(640, 480, "Hello Triangle!", NULL, NULL);
+
+	
+		printf("Initialising...\n");
+		//glutInitWindowSize(700, 700);
+		//glutInitWindowPosition(0, 0);
+		//glutCreateWindow("SOIL Texture Test");
+	
+
+	glEnable(GL_TEXTURE_2D);
+	glShadeModel(GL_SMOOTH);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
+	glClearDepth(1.0f);
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
   
+	isImageLoaded = textureCall::LoadGLTexture();
+	if(isImageLoaded){
     glutDisplayFunc(GlutDisplay);
     glutIdleFunc(GlutIdle);
-    glutKeyboardFunc(GlutKeyboard);
+    //glutKeyboardFunc(GlutKeyboard);
+	glutKeyboardFunc(key_callback);
+	
 
 
 
@@ -633,6 +761,8 @@ BOOL Exit;
     glutPositionWindow(0,0);
 
     glutMainLoop(); 
+	}
+	return;
 }
 
 /******************************************************************************/
