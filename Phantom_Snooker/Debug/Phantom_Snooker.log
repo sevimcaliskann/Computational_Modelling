@@ -1,0 +1,17 @@
+﻿Build started 8/11/2017 3:28:00 PM.
+     1>Project "C:\Users\experimenter\Desktop\computational_modelling_DB\Phantom_Snooker\Phantom_Snooker.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "Debug\Phantom_Snooker.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         All outputs are up-to-date.
+       Link:
+         All outputs are up-to-date.
+         Phantom_Snooker.vcxproj -> C:\Users\experimenter\Desktop\computational_modelling_DB\Phantom_Snooker\Debug\Phantom_Snooker.exe
+       FinalizeBuildStatus:
+         Deleting file "Debug\Phantom_Snooker.unsuccessfulbuild".
+         Touching "Debug\Phantom_Snooker.lastbuildstate".
+     1>Done Building Project "C:\Users\experimenter\Desktop\computational_modelling_DB\Phantom_Snooker\Phantom_Snooker.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.04
