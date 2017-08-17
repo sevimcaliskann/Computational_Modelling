@@ -20,7 +20,6 @@
 #include <WROBOT\WRobot.h>
 #include <WROBOT\WRobot.cpp>
 #include <SOIL.h>
-
 /******************************************************************************/
 
 #define BALLS 5
@@ -84,30 +83,41 @@ GLuint texture[1];
 namespace textureCall{
 	static int LoadGLTexture() {
 		glGenTextures(1, texture);
-		texture[0] = SOIL_load_OGL_texture("img_test.bmp", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
-		if (texture[0] == 0)
-			return false;
 		glBindTexture(GL_TEXTURE_2D, texture[0]);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		/*int width, height;
+		unsigned char *image;
+	
+		image = SOIL_load_image("C:\\Users\\experimenter\\Desktop\\computational_modelling_DB\\Phantom_Snooker\\marbles.bmp", &width, &height, 0, (SOIL_LOAD_RGBA));
+		if (image==0) {
+			printf( "SOIL loading error: '%s'\n", SOIL_last_result() );
+			system("pause");
+			return false;
+		}
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+		SOIL_free_image_data(image);*/
+
+		/*if (texture[0] == -1) {
+			printf( "SOIL loading error: '%s'\n", SOIL_last_result() );
+			system("pause");
+			return false;
+		}*/
+		//texture[0] = SOIL_load_OGL_texture("img_test.bmp", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
+		texture[0] = SOIL_load_OGL_texture("img_test.bmp", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, 
+			(SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT));
+		if (texture[0] == 0){
+			printf( "SOIL loading error: '%s'\n", SOIL_last_result() );
+			system("pause");
+			return false;
+		}
+		 
+		
 		return true;
 	}
 }
 bool isImageLoaded = false;
-
-void mouse_wheel_callback(int button, int dir, int x, int y) {
-	if(dir>0){
-		xrot += 0.3f;
-		yrot += 0.2f;
-		zrot += 0.4f;
-	}
-	else{
-		xrot -= 0.3f;
-		yrot -= 0.2f;
-		zrot -= 0.4f;
-	}
-	glutPostRedisplay();
-}
 
 void key_callback(unsigned char key, int x, int y) {
 	switch (key) {
@@ -115,21 +125,36 @@ void key_callback(unsigned char key, int x, int y) {
 		exit(0);
 		break;
 	}
-	case 'w': {
+	case 'a': {
 		xrot += 0.3f;
 		yrot += 0.2f;
-		zrot += 0.4f;
+		zrot += 1.0f;
 		break;
 	}
 	case 's': {
 		xrot -= 0.3f;
 		yrot -= 0.2f;
-		zrot -= 0.4f;
+		zrot -= 1.0f;
 		break;
 	}
 	}
 	glutPostRedisplay();
 }
+
+void mouse_button_callback(int button, int state, int x, int y) {
+	if (button==GLUT_LEFT_BUTTON && state== GLUT_DOWN) {
+		xrot += 0.3f;
+		yrot += 0.2f;
+		zrot += 0.4f;
+	}
+	else if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
+		xrot -= 0.3f;
+		yrot -= 0.2f;
+		zrot -= 0.4f;
+	}
+	glutPostRedisplay();
+}
+
 
 void reset_ball( int j )
 {
@@ -406,33 +431,33 @@ void Draw( void )
 			glBindTexture(GL_TEXTURE_2D, texture[0]);
 			glBegin(GL_QUADS);
 			// Front Face
-			glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f, 1.0f);  // Bottom Left Of The Texture and Quad
-			glTexCoord2f(1.0f, 0.0f); glVertex3f(1.0f, -1.0f, 1.0f);  // Bottom Right Of The Texture and Quad
-			glTexCoord2f(1.0f, 1.0f); glVertex3f(1.0f, 1.0f, 1.0f);  // Top Right Of The Texture and Quad
-			glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f, 1.0f, 1.0f);  // Top Left Of The Texture and Quad
+			glTexCoord2f(0.0f, 0.0f); glVertex3f(vmin(1,1), vmin(2,1), vmax(3,1));  // Bottom Left Of The Texture and Quad
+			glTexCoord2f(1.0f, 0.0f); glVertex3f(vmax(1,1), vmin(2,1), vmax(3,1));  // Bottom Right Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f(vmax(1,1), vmax(2,1), vmax(3,1));  // Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f(vmin(1,1), vmax(2,1), vmax(3,1));  // Top Left Of The Texture and Quad
 																	  // Back Face
-			glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);  // Bottom Right Of The Texture and Quad
-			glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f, 1.0f, -1.0f);  // Top Right Of The Texture and Quad
-			glTexCoord2f(0.0f, 1.0f); glVertex3f(1.0f, 1.0f, -1.0f);  // Top Left Of The Texture and Quad
-			glTexCoord2f(0.0f, 0.0f); glVertex3f(1.0f, -1.0f, -1.0f);  // Bottom Left Of The Texture and Quad
+			glTexCoord2f(1.0f, 0.0f); glVertex3f(vmin(1,1), vmin(2,1), vmin(3,1));  // Bottom Right Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f(vmin(1,1), vmax(2,1), vmin(3,1));  // Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f(vmax(1,1), vmax(2,1), vmin(3,1));  // Top Left Of The Texture and Quad
+			glTexCoord2f(0.0f, 0.0f); glVertex3f(vmax(1,1), vmin(2,1), vmin(3,1));  // Bottom Left Of The Texture and Quad
 																	   // Top Face
-			glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f, 1.0f, -1.0f);  // Top Left Of The Texture and Quad
-			glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, 1.0f, 1.0f);  // Bottom Left Of The Texture and Quad
-			glTexCoord2f(1.0f, 0.0f); glVertex3f(1.0f, 1.0f, 1.0f);  // Bottom Right Of The Texture and Quad
-			glTexCoord2f(1.0f, 1.0f); glVertex3f(1.0f, 1.0f, -1.0f);  // Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f(vmin(1,1), vmax(2,1), vmin(3,1));  // Top Left Of The Texture and Quad
+			glTexCoord2f(0.0f, 0.0f); glVertex3f(vmin(1,1), vmax(2,1), vmax(3,1));  // Bottom Left Of The Texture and Quad
+			glTexCoord2f(1.0f, 0.0f); glVertex3f(vmax(1,1), vmax(2,1), vmax(3,1));  // Bottom Right Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f(vmax(1,1), vmax(2,1), vmin(3,1));  // Top Right Of The Texture and Quad
 																	  // Bottom Face
-			glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f, -1.0f, -1.0f);  // Top Right Of The Texture and Quad
-			glTexCoord2f(0.0f, 1.0f); glVertex3f(1.0f, -1.0f, -1.0f);  // Top Left Of The Texture and Quad
-			glTexCoord2f(0.0f, 0.0f); glVertex3f(1.0f, -1.0f, 1.0f);  // Bottom Left Of The Texture and Quad
-			glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f, 1.0f);  // Bottom Right Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f(vmin(1,1), vmin(2,1), vmin(3,1));  // Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f(vmax(1,1), vmin(2,1), vmin(3,1));  // Top Left Of The Texture and Quad
+			glTexCoord2f(0.0f, 0.0f); glVertex3f(vmax(1,1), vmin(2,1), vmax(3,1));  // Bottom Left Of The Texture and Quad
+			glTexCoord2f(1.0f, 0.0f); glVertex3f(vmin(1,1), vmin(2,1), vmax(3,1));  // Bottom Right Of The Texture and Quad
 																	   // Right face
-			glTexCoord2f(1.0f, 0.0f); glVertex3f(1.0f, -1.0f, -1.0f);  // Bottom Right Of The Texture and Quad
-			glTexCoord2f(1.0f, 1.0f); glVertex3f(1.0f, 1.0f, -1.0f);  // Top Right Of The Texture and Quad
-			glTexCoord2f(0.0f, 1.0f); glVertex3f(1.0f, 1.0f, 1.0f);  // Top Left Of The Texture and Quad
-			glTexCoord2f(0.0f, 0.0f); glVertex3f(1.0f, -1.0f, 1.0f);  // Bottom Left Of The Texture and Quad
+			glTexCoord2f(1.0f, 0.0f); glVertex3f(vmax(1,1), vmin(2,1), vmin(3,1));  // Bottom Right Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f(vmax(1,1), vmax(2,1), vmin(3,1));  // Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f(vmax(1,1), vmax(2,1), vmax(3,1));  // Top Left Of The Texture and Quad
+			glTexCoord2f(0.0f, 0.0f); glVertex3f(vmax(1,1), vmin(2,1), vmax(3,1));  // Bottom Left Of The Texture and Quad
 																	  // Left Face
-			glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);  // Bottom Left Of The Texture and Quad
-			glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f, 1.0f);  // Bottom Right Of The Texture and Quad;*/
+			//glTexCoord2f(0.0f, 0.0f); glVertex3f(vmin(1,1), vmin(2,1), vmin(3,1));  // Bottom Left Of The Texture and Quad
+			//glTexCoord2f(1.0f, 0.0f); glVertex3f(vmin(1,1), vmin(2,1), vmax(3,1));  // Bottom Right Of The Texture and Quad;*/
 			
 			
 			
@@ -753,10 +778,8 @@ BOOL Exit;
     glutIdleFunc(GlutIdle);
     //glutKeyboardFunc(GlutKeyboard);
 	glutKeyboardFunc(key_callback);
+	glutMouseFunc(mouse_button_callback);
 	
-
-
-
 	glutReshapeWindow(800, 600);        /* Restore us */
     glutPositionWindow(0,0);
 

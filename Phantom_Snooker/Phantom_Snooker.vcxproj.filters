@@ -23,5 +23,20 @@
     <None Include="img_test.bmp">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="marbles.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="rsz_img_test.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="barbara.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="marble.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="LNGCarrier.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

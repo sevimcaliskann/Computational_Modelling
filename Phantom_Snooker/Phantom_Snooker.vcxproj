@@ -84,7 +84,12 @@
     <ClCompile Include="ROBOT_Snooker.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="barbara.bmp" />
     <None Include="img_test.bmp" />
+    <None Include="LNGCarrier.bmp" />
+    <None Include="marble.png" />
+    <None Include="marbles.bmp" />
+    <None Include="rsz_img_test.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
