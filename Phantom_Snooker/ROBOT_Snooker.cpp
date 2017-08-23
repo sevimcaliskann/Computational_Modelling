@@ -20,6 +20,8 @@
 #include <WROBOT\WRobot.h>
 #include <WROBOT\WRobot.cpp>
 #include <SOIL.h>
+#include <GLFW\glfw3.h>
+#include "stb_image.h"
 /******************************************************************************/
 
 #define BALLS 5
@@ -77,7 +79,9 @@ int hitcnt = 0;
 GLfloat x_min = -0.25f, x_max = 0.25f;
 GLfloat y_min = -0.25f, y_max = 0.25f;
 GLfloat z_min = -0.25f, z_max = 0.25f;
-GLfloat xrot, yrot, zrot;
+GLfloat xrot = 0.0f, yrot = 0.0f, zrot = 0.0f;
+GLfloat xtrans = 0.0f, ytrans = 0.0f, ztrans = -5.0f;
+
 
 GLuint texture[1];
 /******************************************************************************/
@@ -87,25 +91,6 @@ namespace textureCall{
 		glBindTexture(GL_TEXTURE_2D, texture[0]);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		/*int width, height;
-		unsigned char *image;
-	
-		image = SOIL_load_image("C:\\Users\\experimenter\\Desktop\\computational_modelling_DB\\Phantom_Snooker\\marbles.bmp", &width, &height, 0, (SOIL_LOAD_RGBA));
-		if (image==0) {
-			printf( "SOIL loading error: '%s'\n", SOIL_last_result() );
-			system("pause");
-			return false;
-		}
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-		SOIL_free_image_data(image);*/
-
-		/*if (texture[0] == -1) {
-			printf( "SOIL loading error: '%s'\n", SOIL_last_result() );
-			system("pause");
-			return false;
-		}*/
-		//texture[0] = SOIL_load_OGL_texture("img_test.bmp", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
 		texture[0] = SOIL_load_OGL_texture("LNGCarrier.bmp", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, 
 			(SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT));
 		if (texture[0] == 0){
@@ -126,7 +111,7 @@ void key_callback(unsigned char key, int x, int y) {
 		exit(0);
 		break;
 	}
-	case 'a': {
+	case 'w': {
 		xrot += 0.3f;
 		yrot += 0.2f;
 		zrot += 1.0f;
@@ -138,9 +123,43 @@ void key_callback(unsigned char key, int x, int y) {
 		zrot -= 1.0f;
 		break;
 	}
+	case '1': {
+		ytrans += 0.1f;
+		break;
+	}
+	case '3': {
+		ytrans -= 0.1f;
+		break;
+	}
+
+
 	}
 	glutPostRedisplay();
 }
+
+void special_key_callback(int key, int x, int y){
+	switch (key) {
+	case GLUT_KEY_RIGHT: {
+		xtrans += 0.1f;
+		break;
+	}
+	case GLUT_KEY_LEFT: {
+		xtrans-= 0.1f;
+		break;
+	}
+	case GLUT_KEY_UP: {
+		ztrans += 0.1f;
+		break;
+	}
+	case GLUT_KEY_DOWN: {
+		ztrans -= 0.1f;
+		break;
+	}
+
+	}
+	glutPostRedisplay();
+}
+
 
 void mouse_button_callback(int button, int state, int x, int y) {
 	if (button==GLUT_LEFT_BUTTON && state== GLUT_DOWN) {
@@ -405,13 +424,13 @@ void Draw( void )
 
     // Clear "stereo" graphics buffers...
     GRAPHICS_ClearStereo();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Processing loop for each eye...
     GRAPHICS_EyeLoop(eye)
     {
 
-        GRAPHICS_ViewCalib(eye, 0.0);
+        //GRAPHICS_ViewCalib(eye);
 
         // Clear "mono" graphics buffers...
         GRAPHICS_ClearMono();
@@ -419,6 +438,7 @@ void Draw( void )
 
         // Cursor ball...
         //GRAPHICS_Sphere(&rpos,RadiusCursor,GREEN);
+		//GRAPHICS_Sphere(&rpos,RadiusCursor,YELLOW);
       
         // Playing balls...
         if( GameStarted )
@@ -437,7 +457,6 @@ void Draw( void )
 				}
             }*/
 
-			//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glLoadIdentity();
 			
 			if(eye==1)
@@ -447,7 +466,7 @@ void Draw( void )
 			
 			
 			glLoadIdentity();
-			glTranslatef(0.0f, 0.0f, -5.0f);
+			glTranslatef(xtrans, ytrans, ztrans);
 			glRotatef(xrot, 1.0f, 0.0f, 0.0f);
 			glRotatef(yrot, 0.0f, 1.0f, 0.0f);
 			glRotatef(zrot, 0.0f, 0.0f, 1.0f);
@@ -496,10 +515,10 @@ void Draw( void )
         //GRAPHICS_Sphere(&targ,RadiusTarget,YELLOW,0.6);
 
 		// Print score
-		//sprintf(text,"Score: %d",hitcnt);
-		//GraphicsDisplayText(text,0.4,textpos);
+		/*sprintf(text,"Score: %d",hitcnt);
+		GraphicsDisplayText(text,0.4,textpos);
 
-		/*if(display_postext)
+		if(display_postext)
 		{
 			sprintf(postext,"X: %.3f, Y:%.3f, Z:%.3f",rpos(1,1),rpos(2,1),rpos(3,1));
 			GraphicsDisplayText(postext,postext_size,postext_pos);
@@ -689,15 +708,50 @@ BOOL Exit;
     }
     	
 	
-	GRAPHICS_OpenGL(GRAPHICS_FLAG_LIGHTING | GRAPHICS_FLAG_TRANSPARENCY,LIGHTBLUE);
+	GRAPHICS_OpenGL(GRAPHICS_FLAG_LIGHTING | GRAPHICS_FLAG_TRANSPARENCY,TURQUOISE);
 	//glDisable(GL_LIGHT0);
-	GLfloat light0_position[] = { 0, 5.5, -10, 0.01 };
-    GLfloat light0_brightness[] = { 1, 1, 1, 1 };
-	GLfloat light0_ambient[] = { 0.3, 0.3, 0.3, 0.3 };
+	/*GLfloat light0_position[] = { 30.0, 5.5, 30.0, 0.01 };
+	GLfloat light0_specular[] = { 0, 0, 1, 0.5 };
+    GLfloat light0_brightness[] = { 1, 1, 1, 1.0 };
+	GLfloat light0_ambient[] = { 1.0, 0.0, 1.0, 1.0 };
+	GLfloat mat_shininess[] = { 50.0 };
+
+	glShadeModel (GL_SMOOTH);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, light0_specular);
+	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+	glMaterialfv(GL_FRONT, GL_AMBIENT, light0_ambient);
     glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, light0_ambient);
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, light0_brightness);
-    glLightfv(GL_LIGHT0, GL_SPECULAR, light0_brightness);
+	//glLightfv(GL_LIGHT0, GL_AMBIENT, light0_ambient);
+    //glLightfv(GL_LIGHT0, GL_DIFFUSE, light0_brightness);
+   // glLightfv(GL_LIGHT0, GL_SPECULAR, light0_specular);
+
+	glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_DEPTH_TEST);*/
+	glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+
+	GLfloat light0_position[] = { 0.0, 0.0, 30.0, 0.01 };
+	glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
+
+	GLfloat no_mat[] = { 0.0, 0.0, 0.0, 1.0 };
+   GLfloat mat_ambient[] = { 0.5, 0.5, 0.5, 1.0 };
+   GLfloat mat_ambient_color[] = { 0.8, 0.8, 0.8, 1.0 };
+   GLfloat mat_diffuse[] = { 0.1, 0.1, 0.1, 1.0 };
+   GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+   GLfloat no_shininess[] = { 0.0 };
+   GLfloat low_shininess[] = { 5.0 };
+   GLfloat high_shininess[] = { 100.0 };
+   GLfloat mat_emission[] = {0.3, 0.2, 0.2, 0.0};
+
+   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   glShadeModel (GL_SMOOTH);
+
+   glMaterialfv(GL_BACK, GL_AMBIENT, mat_ambient);
+   glMaterialfv(GL_BACK, GL_DIFFUSE, mat_diffuse);
+   glMaterialfv(GL_BACK, GL_SPECULAR, mat_specular);
+   glMaterialfv(GL_BACK, GL_SHININESS, high_shininess);
+   glMaterialfv(GL_BACK, GL_EMISSION, no_mat);
 
 
     Robot2D = ROBOT_2D();
@@ -792,9 +846,9 @@ BOOL Exit;
 	if(isImageLoaded){
     glutDisplayFunc(GlutDisplay);
     glutIdleFunc(GlutIdle);
-    //glutKeyboardFunc(GlutKeyboard);
 	glutKeyboardFunc(key_callback);
-	glutMouseFunc(mouse_button_callback);
+	//glutMouseFunc(mouse_button_callback);
+	glutSpecialFunc(special_key_callback);
 	
 	glutReshapeWindow(800, 600);        /* Restore us */
     glutPositionWindow(0,0);
