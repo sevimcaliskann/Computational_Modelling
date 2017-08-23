@@ -74,9 +74,10 @@ char text[128];
 int hitcnt = 0;
 
 
-GLfloat xrot;
-GLfloat yrot;
-GLfloat zrot;
+GLfloat x_min = -0.25f, x_max = 0.25f;
+GLfloat y_min = -0.25f, y_max = 0.25f;
+GLfloat z_min = -0.25f, z_max = 0.25f;
+GLfloat xrot, yrot, zrot;
 
 GLuint texture[1];
 /******************************************************************************/
@@ -105,7 +106,7 @@ namespace textureCall{
 			return false;
 		}*/
 		//texture[0] = SOIL_load_OGL_texture("img_test.bmp", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
-		texture[0] = SOIL_load_OGL_texture("img_test.bmp", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, 
+		texture[0] = SOIL_load_OGL_texture("LNGCarrier.bmp", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, 
 			(SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT));
 		if (texture[0] == 0){
 			printf( "SOIL loading error: '%s'\n", SOIL_last_result() );
@@ -404,12 +405,13 @@ void Draw( void )
 
     // Clear "stereo" graphics buffers...
     GRAPHICS_ClearStereo();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Processing loop for each eye...
     GRAPHICS_EyeLoop(eye)
     {
 
-        GRAPHICS_ViewCalib(eye);
+        GRAPHICS_ViewCalib(eye, 0.0);
 
         // Clear "mono" graphics buffers...
         GRAPHICS_ClearMono();
@@ -421,7 +423,29 @@ void Draw( void )
         // Playing balls...
         if( GameStarted )
         {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			
+			
+			/*for(j=1;j<=BALLS;j++)
+            {
+				if(eye==0)
+				{
+                    GRAPHICS_Sphere(&pos[j],RadiusBall,PURPLE);
+				}
+				else
+				{
+					GRAPHICS_Sphere(&pos[j],RadiusBall,RED);
+				}
+            }*/
+
+			//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glLoadIdentity();
+			
+			if(eye==1)
+				GRAPHICS_ViewCalib(eye);
+			else
+				GRAPHICS_ViewCalib(eye, 0.0);
+			
+			
 			glLoadIdentity();
 			glTranslatef(0.0f, 0.0f, -5.0f);
 			glRotatef(xrot, 1.0f, 0.0f, 0.0f);
@@ -430,50 +454,42 @@ void Draw( void )
 
 			glBindTexture(GL_TEXTURE_2D, texture[0]);
 			glBegin(GL_QUADS);
-			// Front Face
-			glTexCoord2f(0.0f, 0.0f); glVertex3f(vmin(1,1), vmin(2,1), vmax(3,1));  // Bottom Left Of The Texture and Quad
-			glTexCoord2f(1.0f, 0.0f); glVertex3f(vmax(1,1), vmin(2,1), vmax(3,1));  // Bottom Right Of The Texture and Quad
-			glTexCoord2f(1.0f, 1.0f); glVertex3f(vmax(1,1), vmax(2,1), vmax(3,1));  // Top Right Of The Texture and Quad
-			glTexCoord2f(0.0f, 1.0f); glVertex3f(vmin(1,1), vmax(2,1), vmax(3,1));  // Top Left Of The Texture and Quad
+    // Front Face
+			glTexCoord2f(0.0f, 0.0f); glVertex3f(x_min, y_min, z_max);  // Bottom Left Of The Texture and Quad
+			glTexCoord2f(1.0f, 0.0f); glVertex3f(x_max, y_min, z_max);  // Bottom Right Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f(x_max, y_max, z_max);  // Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f(x_min, y_max, z_max);  // Top Left Of The Texture and Quad
 																	  // Back Face
-			glTexCoord2f(1.0f, 0.0f); glVertex3f(vmin(1,1), vmin(2,1), vmin(3,1));  // Bottom Right Of The Texture and Quad
-			glTexCoord2f(1.0f, 1.0f); glVertex3f(vmin(1,1), vmax(2,1), vmin(3,1));  // Top Right Of The Texture and Quad
-			glTexCoord2f(0.0f, 1.0f); glVertex3f(vmax(1,1), vmax(2,1), vmin(3,1));  // Top Left Of The Texture and Quad
-			glTexCoord2f(0.0f, 0.0f); glVertex3f(vmax(1,1), vmin(2,1), vmin(3,1));  // Bottom Left Of The Texture and Quad
+			glTexCoord2f(1.0f, 0.0f); glVertex3f(x_min, y_min, z_min);  // Bottom Right Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f(x_min, y_max, z_min);  // Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f(x_max, y_max, z_min);  // Top Left Of The Texture and Quad
+			glTexCoord2f(0.0f, 0.0f); glVertex3f(x_max, y_min, z_min);  // Bottom Left Of The Texture and Quad
 																	   // Top Face
-			glTexCoord2f(0.0f, 1.0f); glVertex3f(vmin(1,1), vmax(2,1), vmin(3,1));  // Top Left Of The Texture and Quad
-			glTexCoord2f(0.0f, 0.0f); glVertex3f(vmin(1,1), vmax(2,1), vmax(3,1));  // Bottom Left Of The Texture and Quad
-			glTexCoord2f(1.0f, 0.0f); glVertex3f(vmax(1,1), vmax(2,1), vmax(3,1));  // Bottom Right Of The Texture and Quad
-			glTexCoord2f(1.0f, 1.0f); glVertex3f(vmax(1,1), vmax(2,1), vmin(3,1));  // Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f(x_min, y_max, z_min);  // Top Left Of The Texture and Quad
+			glTexCoord2f(0.0f, 0.0f); glVertex3f(x_min, y_max, z_max);  // Bottom Left Of The Texture and Quad
+			glTexCoord2f(1.0f, 0.0f); glVertex3f(x_max, y_max, z_max);  // Bottom Right Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f(x_max, y_max, z_min);  // Top Right Of The Texture and Quad
 																	  // Bottom Face
-			glTexCoord2f(1.0f, 1.0f); glVertex3f(vmin(1,1), vmin(2,1), vmin(3,1));  // Top Right Of The Texture and Quad
-			glTexCoord2f(0.0f, 1.0f); glVertex3f(vmax(1,1), vmin(2,1), vmin(3,1));  // Top Left Of The Texture and Quad
-			glTexCoord2f(0.0f, 0.0f); glVertex3f(vmax(1,1), vmin(2,1), vmax(3,1));  // Bottom Left Of The Texture and Quad
-			glTexCoord2f(1.0f, 0.0f); glVertex3f(vmin(1,1), vmin(2,1), vmax(3,1));  // Bottom Right Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f(x_min, y_min, z_min);  // Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f(x_max, y_min, z_min);  // Top Left Of The Texture and Quad
+			glTexCoord2f(0.0f, 0.0f); glVertex3f(x_max, y_min, z_max);  // Bottom Left Of The Texture and Quad
+			glTexCoord2f(1.0f, 0.0f); glVertex3f(x_min, y_min, z_max);  // Bottom Right Of The Texture and Quad
 																	   // Right face
-			glTexCoord2f(1.0f, 0.0f); glVertex3f(vmax(1,1), vmin(2,1), vmin(3,1));  // Bottom Right Of The Texture and Quad
-			glTexCoord2f(1.0f, 1.0f); glVertex3f(vmax(1,1), vmax(2,1), vmin(3,1));  // Top Right Of The Texture and Quad
-			glTexCoord2f(0.0f, 1.0f); glVertex3f(vmax(1,1), vmax(2,1), vmax(3,1));  // Top Left Of The Texture and Quad
-			glTexCoord2f(0.0f, 0.0f); glVertex3f(vmax(1,1), vmin(2,1), vmax(3,1));  // Bottom Left Of The Texture and Quad
+			glTexCoord2f(1.0f, 0.0f); glVertex3f(x_max, y_min, z_min);  // Bottom Right Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f(x_max, y_max, z_min);  // Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f(x_max, y_max, z_max);  // Top Left Of The Texture and Quad
+			glTexCoord2f(0.0f, 0.0f); glVertex3f(x_max, y_min, z_max);  // Bottom Left Of The Texture and Quad
 																	  // Left Face
-			//glTexCoord2f(0.0f, 0.0f); glVertex3f(vmin(1,1), vmin(2,1), vmin(3,1));  // Bottom Left Of The Texture and Quad
-			//glTexCoord2f(1.0f, 0.0f); glVertex3f(vmin(1,1), vmin(2,1), vmax(3,1));  // Bottom Right Of The Texture and Quad;*/
-			
-			
-			
-			/*set_color(RED);
-
-            for(j=1;j<=BALLS;j++)
-            {
-                GRAPHICS_Sphere(&pos[j],RadiusBall,RED);
-            }*/
-        }
-
-        // Target sphere
-			glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f, 1.0f, 1.0f);  // Top Right Of The Texture and Quad
-			glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f, 1.0f, -1.0f);  // Top Left Of The Texture and Quad
+			glTexCoord2f(0.0f, 0.0f); glVertex3f(x_min, y_min, z_min);  // Bottom Left Of The Texture and Quad
+			glTexCoord2f(1.0f, 0.0f); glVertex3f(x_min, y_min, z_max);  // Bottom Right Of The Texture and Quad
+			glTexCoord2f(1.0f, 1.0f); glVertex3f(x_min, y_max, z_max);  // Top Right Of The Texture and Quad
+			glTexCoord2f(0.0f, 1.0f); glVertex3f(x_min, y_max, z_min);  // Top Left Of The Texture and Quad
 			glEnd();
+
 			glFlush();
+
+			
+		}
 			/*xrot += 0.3f;
 			yrot += 0.2f;
 			zrot += 0.4f;*/
@@ -483,11 +499,11 @@ void Draw( void )
 		//sprintf(text,"Score: %d",hitcnt);
 		//GraphicsDisplayText(text,0.4,textpos);
 
-		if(display_postext)
+		/*if(display_postext)
 		{
 			sprintf(postext,"X: %.3f, Y:%.3f, Z:%.3f",rpos(1,1),rpos(2,1),rpos(3,1));
 			GraphicsDisplayText(postext,postext_size,postext_pos);
-		}
+		}*/
 		
     }      
 
