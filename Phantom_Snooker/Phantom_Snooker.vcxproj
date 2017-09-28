@@ -50,14 +50,14 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\experimenter\Desktop\Simple OpenGL Image Library\src;D:\vBot\Shared\include;$(OH_SDK_BASE)\include;$(OH_SDK_BASE)\utilities\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\experimenter\Desktop\Simple OpenGL Image Library\src;D:\vBot\Shared\include;$(OH_SDK_BASE)\include;$(OH_SDK_BASE)\utilities\include;C:\Users\experimenter\Desktop\computational_modelling_DB\Phantom_Snooker\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\experimenter\Desktop\Simple OpenGL Image Library\projects\VC9\Debug;D:\vBot\Shared\lib;$(OH_SDK_BASE)\lib\Win32\DebugAcademicEdition;$(OH_SDK_BASE)\utilities\lib\Win32\DebugAcademicEdition</AdditionalLibraryDirectories>
-      <AdditionalDependencies>motor.lib;nr.lib;win626.obj;winmm.lib;oapi.lib;opengl32.lib;glu32.lib;user32.lib;gdi32.lib;kernel32.lib;glut32.lib;glm.obj;hd.lib;hdu.lib;pdi.lib;SOIL.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\experimenter\Desktop\computational_modelling_DB\Phantom_Snooker\GLFW\lib-vc2010;C:\Users\experimenter\Desktop\Simple OpenGL Image Library\projects\VC9\Debug;D:\vBot\Shared\lib;$(OH_SDK_BASE)\lib\Win32\DebugAcademicEdition;$(OH_SDK_BASE)\utilities\lib\Win32\DebugAcademicEdition</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3dll.lib;motor.lib;nr.lib;win626.obj;winmm.lib;oapi.lib;opengl32.lib;glu32.lib;user32.lib;gdi32.lib;kernel32.lib;glut32.lib;glm.obj;hd.lib;hdu.lib;pdi.lib;SOIL.lib</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>libc.lib;MSVCRTD.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
@@ -84,12 +84,16 @@
     <ClCompile Include="ROBOT_Snooker.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="barbara.bmp" />
     <None Include="img_test.bmp" />
-    <None Include="LNGCarrier.bmp" />
-    <None Include="marble.png" />
-    <None Include="marbles.bmp" />
-    <None Include="rsz_img_test.bmp" />
+    <None Include="left.bmp" />
+    <None Include="left2.bmp" />
+    <None Include="left3.bmp" />
+    <None Include="right.bmp" />
+    <None Include="right2.bmp" />
+    <None Include="right3.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

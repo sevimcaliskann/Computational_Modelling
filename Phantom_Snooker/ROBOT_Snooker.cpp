@@ -79,21 +79,22 @@ int hitcnt = 0;
 GLfloat x_min = -0.25f, x_max = 0.25f;
 GLfloat y_min = -0.25f, y_max = 0.25f;
 GLfloat z_min = -0.25f, z_max = 0.25f;
-GLfloat xrot = 0.0f, yrot = 0.0f, zrot = 0.0f;
+GLfloat xrot = 0.5f, yrot = 0.5f, zrot = 0.5f;
 GLfloat xtrans = 0.0f, ytrans = 0.0f, ztrans = -5.0f;
+GLfloat eyeOffset = 0.0f;
+GLfloat nearPlane = 0.5f, farPlane = 20.0f;
 
-
-GLuint texture[1];
+GLuint texture1, texture2;//"LNGCarrier.bmp"
 /******************************************************************************/
-namespace textureCall{
-	static int LoadGLTexture() {
-		glGenTextures(1, texture);
-		glBindTexture(GL_TEXTURE_2D, texture[0]);
+
+	static int LoadGLTexture(const char* path, GLuint &texture) {
+		glGenTextures(1, &texture);
+		glBindTexture(GL_TEXTURE_2D, texture);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		texture[0] = SOIL_load_OGL_texture("LNGCarrier.bmp", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, 
+		texture = SOIL_load_OGL_texture(path, SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, 
 			(SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT));
-		if (texture[0] == 0){
+		if (texture == 0){
 			printf( "SOIL loading error: '%s'\n", SOIL_last_result() );
 			system("pause");
 			return false;
@@ -102,7 +103,7 @@ namespace textureCall{
 		
 		return true;
 	}
-}
+
 bool isImageLoaded = false;
 
 void key_callback(unsigned char key, int x, int y) {
@@ -131,6 +132,14 @@ void key_callback(unsigned char key, int x, int y) {
 		ytrans -= 0.1f;
 		break;
 	}
+	case 'q': {
+		eyeOffset += 0.01f;
+		break;
+	}
+	case 'a': {
+		eyeOffset -= 0.01f;
+		break;
+	}
 
 
 	}
@@ -138,25 +147,21 @@ void key_callback(unsigned char key, int x, int y) {
 }
 
 void special_key_callback(int key, int x, int y){
+	float ratio = farPlane/nearPlane;
 	switch (key) {
-	case GLUT_KEY_RIGHT: {
-		xtrans += 0.1f;
-		break;
-	}
-	case GLUT_KEY_LEFT: {
-		xtrans-= 0.1f;
-		break;
-	}
 	case GLUT_KEY_UP: {
-		ztrans += 0.1f;
+		ratio += 1.0f;
 		break;
 	}
 	case GLUT_KEY_DOWN: {
-		ztrans -= 0.1f;
+		ratio -= 1.0f;
 		break;
 	}
 
 	}
+	if(ratio < 1.0f)
+		ratio = 1.0f;
+	farPlane = ratio*nearPlane;
 	glutPostRedisplay();
 }
 
@@ -418,9 +423,124 @@ float s=size*0.015;
 
 /******************************************************************************/
 
+float * CreateDefaultStereoParameters(
+    float viewportWidthInches,
+    float viewportHeightInches,
+    float worldScaleInInches,
+    float stereoExaggeration,
+	bool rightChannel, 
+	float farZ, float nearZ )
+{
+    // The default stereo parameters produced by this method are based on two assumptions:
+    // 1. The viewer's eyes are 24 inches from the display, and
+    // 2. The viewer's eyes are separated by 1.25 inches (interocular distance.)
+    const float DEFAULT_VIEWER_DISTANCE_IN_INCHES = 24.0f;
+    const float DEFAULT_INTEROCULAR_DISTANCE_IN_INCHES = 1.25f;
+
+    float viewportWidth = viewportWidthInches / worldScaleInInches;
+    float viewportHeight = viewportHeightInches / worldScaleInInches;
+    float viewerDistance = DEFAULT_VIEWER_DISTANCE_IN_INCHES / worldScaleInInches;
+    float interocularDistance = DEFAULT_INTEROCULAR_DISTANCE_IN_INCHES / worldScaleInInches * stereoExaggeration;
+
+    float yScale = 2.f * viewerDistance / viewportHeight;
+    float xScale = 2.f * viewerDistance / viewportWidth;
+
+    float mFactor = - interocularDistance / viewportWidth;
+
+    if (!rightChannel)
+    {
+        mFactor = -mFactor;
+    }
+
+    float m22 = farZ / (nearZ - farZ);
+
+    // Construct a stereo perspective projection matrix based on assumptions
+    // about the viewer and specified stereo parameters. Note that compared
+    // to a mono perspective projection matrix, there are two differences:
+    //  - a non-zero x:z component (m20)
+    //  - a non-zero x:w component (m30)
+    // The values of these two factors affect both the x-offset between the
+    // left and right eyes, as well as the depth at which they converge. The
+    // math used to arrive at these values will often need to change depending
+    // on the content being presented in order to ensure a comfortable viewing
+    // experience. For example, the factors for rendering massive exterior
+    // landscapes will be different than those used for rendering building
+    // interiors. Because of this, developers are encouraged to experiment
+    // with different techniques for generating these values.
+	float XMATRIX[16] = {
+        xScale, 0, 0, 0,
+        0, yScale, 0, 0,
+        mFactor, 0, m22, -1,
+        viewerDistance * mFactor, 0, nearZ * m22, 0
+	};
+    return XMATRIX;
+}
+
+
+void DrawForTheEye(int eye, const GLuint &texture, const int &eyeOffs){
+	//GLfloat *m = CreateDefaultStereoParameters(20, 15, 60, 45, true, 20.0, 1.5 );
+	//glPushMatrix();
+	GLfloat *m = NULL;
+	if(eye==1){
+		GRAPHICS_ViewCalib(eye);
+		m = CreateDefaultStereoParameters(600, 450, 100, 1, false, farPlane, nearPlane );
+	}
+	else{
+		GRAPHICS_ViewCalib(eye, 0.0);
+		m = CreateDefaultStereoParameters(600, 450, 100, 1, true, farPlane, nearPlane );
+	}
+
+	glLoadMatrixf(m);
+	glPushMatrix();
+	glBindTexture(GL_TEXTURE_2D, texture);		
+			
+			//glLoadIdentity();
+			//glTranslatef(xtrans, ytrans, ztrans);
+	
+
+			//glBindTexture(GL_TEXTURE_2D, texture[0]);
+	glBegin(GL_QUADS);
+    // Front Face
+	glTexCoord2f(0.0f, 0.0f); glVertex3f(x_min, y_min, z_max);  // Bottom Left Of The Texture and Quad
+	glTexCoord2f(1.0f, 0.0f); glVertex3f(x_max, y_min, z_max);  // Bottom Right Of The Texture and Quad
+	glTexCoord2f(1.0f, 1.0f); glVertex3f(x_max, y_max, z_max);  // Top Right Of The Texture and Quad
+	glTexCoord2f(0.0f, 1.0f); glVertex3f(x_min, y_max, z_max);  // Top Left Of The Texture and Quad
+															  // Back Face
+	glTexCoord2f(1.0f, 0.0f); glVertex3f(x_min, y_min, z_min);  // Bottom Right Of The Texture and Quad
+	glTexCoord2f(1.0f, 1.0f); glVertex3f(x_min, y_max, z_min);  // Top Right Of The Texture and Quad
+	glTexCoord2f(0.0f, 1.0f); glVertex3f(x_max, y_max, z_min);  // Top Left Of The Texture and Quad
+	glTexCoord2f(0.0f, 0.0f); glVertex3f(x_max, y_min, z_min);  // Bottom Left Of The Texture and Quad
+															   // Top Face
+	glTexCoord2f(0.0f, 1.0f); glVertex3f(x_min, y_max, z_min);  // Top Left Of The Texture and Quad
+	glTexCoord2f(0.0f, 0.0f); glVertex3f(x_min, y_max, z_max);  // Bottom Left Of The Texture and Quad
+	glTexCoord2f(1.0f, 0.0f); glVertex3f(x_max, y_max, z_max);  // Bottom Right Of The Texture and Quad
+	glTexCoord2f(1.0f, 1.0f); glVertex3f(x_max, y_max, z_min);  // Top Right Of The Texture and Quad
+																	  // Bottom Face
+	glTexCoord2f(1.0f, 1.0f); glVertex3f(x_min, y_min, z_min);  // Top Right Of The Texture and Quad
+	glTexCoord2f(0.0f, 1.0f); glVertex3f(x_max, y_min, z_min);  // Top Left Of The Texture and Quad
+	glTexCoord2f(0.0f, 0.0f); glVertex3f(x_max, y_min, z_max);  // Bottom Left Of The Texture and Quad
+	glTexCoord2f(1.0f, 0.0f); glVertex3f(x_min, y_min, z_max);  // Bottom Right Of The Texture and Quad
+																	   // Right face
+	glTexCoord2f(1.0f, 0.0f); glVertex3f(x_max, y_min, z_min);  // Bottom Right Of The Texture and Quad
+	glTexCoord2f(1.0f, 1.0f); glVertex3f(x_max, y_max, z_min);  // Top Right Of The Texture and Quad
+	glTexCoord2f(0.0f, 1.0f); glVertex3f(x_max, y_max, z_max);  // Top Left Of The Texture and Quad
+	glTexCoord2f(0.0f, 0.0f); glVertex3f(x_max, y_min, z_max);  // Bottom Left Of The Texture and Quad
+																	  // Left Face
+	glTexCoord2f(0.0f, 0.0f); glVertex3f(x_min, y_min, z_min);  // Bottom Left Of The Texture and Quad
+	glTexCoord2f(1.0f, 0.0f); glVertex3f(x_min, y_min, z_max);  // Bottom Right Of The Texture and Quad
+	glTexCoord2f(1.0f, 1.0f); glVertex3f(x_min, y_max, z_max);  // Top Right Of The Texture and Quad
+	glTexCoord2f(0.0f, 1.0f); glVertex3f(x_min, y_max, z_min);  // Top Left Of The Texture and Quad
+	glEnd();
+			
+	glPopMatrix();
+	//glPopMatrix();
+
+	glFlush();
+}
+
 void Draw( void )
 {    
-//int  j;
+int  j;
 
     // Clear "stereo" graphics buffers...
     GRAPHICS_ClearStereo();
@@ -430,22 +550,19 @@ void Draw( void )
     GRAPHICS_EyeLoop(eye)
     {
 
-        //GRAPHICS_ViewCalib(eye);
+        /*GRAPHICS_ViewCalib(eye);
 
         // Clear "mono" graphics buffers...
         GRAPHICS_ClearMono();
-
-
-        // Cursor ball...
-        //GRAPHICS_Sphere(&rpos,RadiusCursor,GREEN);
-		//GRAPHICS_Sphere(&rpos,RadiusCursor,YELLOW);
-      
+		GRAPHICS_Sphere(&rpos,RadiusCursor, YELLOW);*/
+		
+        //GameStarted = true;
         // Playing balls...
         if( GameStarted )
         {
+			/*set_color(RED);
 			
-			
-			/*for(j=1;j<=BALLS;j++)
+			for(j=1;j<=BALLS;j++)
             {
 				if(eye==0)
 				{
@@ -453,65 +570,17 @@ void Draw( void )
 				}
 				else
 				{
-					GRAPHICS_Sphere(&pos[j],RadiusBall,RED);
+					GRAPHICS_Sphere(&pos[j],RadiusBall,PURPLE);
 				}
             }*/
-
-			glLoadIdentity();
 			
+			//glLoadIdentity();
 			if(eye==1)
-				GRAPHICS_ViewCalib(eye);
+				DrawForTheEye(eye, texture1, 0);
 			else
-				GRAPHICS_ViewCalib(eye, 0.0);
-			
-			
-			glLoadIdentity();
-			glTranslatef(xtrans, ytrans, ztrans);
-			glRotatef(xrot, 1.0f, 0.0f, 0.0f);
-			glRotatef(yrot, 0.0f, 1.0f, 0.0f);
-			glRotatef(zrot, 0.0f, 0.0f, 1.0f);
-
-			glBindTexture(GL_TEXTURE_2D, texture[0]);
-			glBegin(GL_QUADS);
-    // Front Face
-			glTexCoord2f(0.0f, 0.0f); glVertex3f(x_min, y_min, z_max);  // Bottom Left Of The Texture and Quad
-			glTexCoord2f(1.0f, 0.0f); glVertex3f(x_max, y_min, z_max);  // Bottom Right Of The Texture and Quad
-			glTexCoord2f(1.0f, 1.0f); glVertex3f(x_max, y_max, z_max);  // Top Right Of The Texture and Quad
-			glTexCoord2f(0.0f, 1.0f); glVertex3f(x_min, y_max, z_max);  // Top Left Of The Texture and Quad
-																	  // Back Face
-			glTexCoord2f(1.0f, 0.0f); glVertex3f(x_min, y_min, z_min);  // Bottom Right Of The Texture and Quad
-			glTexCoord2f(1.0f, 1.0f); glVertex3f(x_min, y_max, z_min);  // Top Right Of The Texture and Quad
-			glTexCoord2f(0.0f, 1.0f); glVertex3f(x_max, y_max, z_min);  // Top Left Of The Texture and Quad
-			glTexCoord2f(0.0f, 0.0f); glVertex3f(x_max, y_min, z_min);  // Bottom Left Of The Texture and Quad
-																	   // Top Face
-			glTexCoord2f(0.0f, 1.0f); glVertex3f(x_min, y_max, z_min);  // Top Left Of The Texture and Quad
-			glTexCoord2f(0.0f, 0.0f); glVertex3f(x_min, y_max, z_max);  // Bottom Left Of The Texture and Quad
-			glTexCoord2f(1.0f, 0.0f); glVertex3f(x_max, y_max, z_max);  // Bottom Right Of The Texture and Quad
-			glTexCoord2f(1.0f, 1.0f); glVertex3f(x_max, y_max, z_min);  // Top Right Of The Texture and Quad
-																	  // Bottom Face
-			glTexCoord2f(1.0f, 1.0f); glVertex3f(x_min, y_min, z_min);  // Top Right Of The Texture and Quad
-			glTexCoord2f(0.0f, 1.0f); glVertex3f(x_max, y_min, z_min);  // Top Left Of The Texture and Quad
-			glTexCoord2f(0.0f, 0.0f); glVertex3f(x_max, y_min, z_max);  // Bottom Left Of The Texture and Quad
-			glTexCoord2f(1.0f, 0.0f); glVertex3f(x_min, y_min, z_max);  // Bottom Right Of The Texture and Quad
-																	   // Right face
-			glTexCoord2f(1.0f, 0.0f); glVertex3f(x_max, y_min, z_min);  // Bottom Right Of The Texture and Quad
-			glTexCoord2f(1.0f, 1.0f); glVertex3f(x_max, y_max, z_min);  // Top Right Of The Texture and Quad
-			glTexCoord2f(0.0f, 1.0f); glVertex3f(x_max, y_max, z_max);  // Top Left Of The Texture and Quad
-			glTexCoord2f(0.0f, 0.0f); glVertex3f(x_max, y_min, z_max);  // Bottom Left Of The Texture and Quad
-																	  // Left Face
-			glTexCoord2f(0.0f, 0.0f); glVertex3f(x_min, y_min, z_min);  // Bottom Left Of The Texture and Quad
-			glTexCoord2f(1.0f, 0.0f); glVertex3f(x_min, y_min, z_max);  // Bottom Right Of The Texture and Quad
-			glTexCoord2f(1.0f, 1.0f); glVertex3f(x_min, y_max, z_max);  // Top Right Of The Texture and Quad
-			glTexCoord2f(0.0f, 1.0f); glVertex3f(x_min, y_max, z_min);  // Top Left Of The Texture and Quad
-			glEnd();
-
-			glFlush();
-
-			
+				DrawForTheEye(eye, texture2, eyeOffset);	
 		}
-			/*xrot += 0.3f;
-			yrot += 0.2f;
-			zrot += 0.4f;*/
+
         //GRAPHICS_Sphere(&targ,RadiusTarget,YELLOW,0.6);
 
 		// Print score
@@ -744,7 +813,7 @@ BOOL Exit;
    GLfloat high_shininess[] = { 100.0 };
    GLfloat mat_emission[] = {0.3, 0.2, 0.2, 0.0};
 
-   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    glShadeModel (GL_SMOOTH);
 
    glMaterialfv(GL_BACK, GL_AMBIENT, mat_ambient);
@@ -842,7 +911,8 @@ BOOL Exit;
 	glDepthFunc(GL_LEQUAL);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
   
-	isImageLoaded = textureCall::LoadGLTexture();
+	isImageLoaded = LoadGLTexture("right3.bmp", texture1);
+	isImageLoaded = LoadGLTexture("left3.bmp", texture2);
 	if(isImageLoaded){
     glutDisplayFunc(GlutDisplay);
     glutIdleFunc(GlutIdle);
