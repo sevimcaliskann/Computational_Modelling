@@ -84,13 +84,32 @@
     <ClCompile Include="ROBOT_Snooker.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="img_test.bmp" />
+    <None Include="l1.bmp" />
+    <None Include="l2.bmp" />
+    <None Include="left-Eye.bmp" />
     <None Include="left.bmp" />
     <None Include="left2.bmp" />
-    <None Include="left3.bmp" />
+    <None Include="leftBottom.bmp" />
+    <None Include="leftBottom2.bmp" />
+    <None Include="leftCenter.bmp" />
+    <None Include="leftEye.bmp" />
+    <None Include="leftSmall.bmp" />
+    <None Include="leftSpikes.bmp" />
+    <None Include="leftTop.bmp" />
+    <None Include="leftTop2.bmp" />
+    <None Include="r1.bmp" />
+    <None Include="r2.bmp" />
+    <None Include="right-Eye.bmp" />
     <None Include="right.bmp" />
     <None Include="right2.bmp" />
-    <None Include="right3.bmp" />
+    <None Include="rightBottom.bmp" />
+    <None Include="rightBottom2.bmp" />
+    <None Include="rightCenter.bmp" />
+    <None Include="rightEye.bmp" />
+    <None Include="rightSmall.bmp" />
+    <None Include="rightSpikes.bmp" />
+    <None Include="rightTop.bmp" />
+    <None Include="rightTop2.bmp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stb_image.h" />

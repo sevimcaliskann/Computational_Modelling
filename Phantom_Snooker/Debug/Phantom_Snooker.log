@@ -1,12 +1,37 @@
-﻿Build started 9/28/2017 12:45:46 PM.
+﻿Build started 10/13/2017 11:08:08 AM.
      1>Project "C:\Users\experimenter\Desktop\computational_modelling_DB\Phantom_Snooker\Phantom_Snooker.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "Debug\Phantom_Snooker.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         All outputs are up-to-date.
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /I"C:\Users\experimenter\Desktop\Simple OpenGL Image Library\src" /ID:\vBot\Shared\include /IC:\OpenHaptics\Academic\3.1\include /IC:\OpenHaptics\Academic\3.1\utilities\include /IC:\Users\experimenter\Desktop\computational_modelling_DB\Phantom_Snooker\GLFW\include /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MT /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ROBOT_Snooker.cpp
+         ROBOT_Snooker.cpp
+     1>c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdint.h(77): warning C4005: 'INT16_MAX' : macro redefinition
+                 d:\vbot\shared\include\typedefs.h(51) : see previous definition of 'INT16_MAX'
+     1>c:\users\experimenter\desktop\computational_modelling_db\phantom_snooker\robot_snooker.cpp(56): warning C4305: 'initializing' : truncation from 'double' to 'float'
+     1>c:\users\experimenter\desktop\computational_modelling_db\phantom_snooker\robot_snooker.cpp(67): warning C4305: 'initializing' : truncation from 'double' to 'float'
+     1>c:\users\experimenter\desktop\computational_modelling_db\phantom_snooker\robot_snooker.cpp(476): warning C4172: returning address of local variable or temporary
+     1>c:\users\experimenter\desktop\computational_modelling_db\phantom_snooker\robot_snooker.cpp(549): warning C4101: 'j' : unreferenced local variable
+     1>c:\users\experimenter\desktop\computational_modelling_db\phantom_snooker\robot_snooker.cpp(809): warning C4305: 'initializing' : truncation from 'double' to 'GLfloat'
+     1>c:\users\experimenter\desktop\computational_modelling_db\phantom_snooker\robot_snooker.cpp(814): warning C4305: 'initializing' : truncation from 'double' to 'GLfloat'
+     1>c:\users\experimenter\desktop\computational_modelling_db\phantom_snooker\robot_snooker.cpp(814): warning C4305: 'initializing' : truncation from 'double' to 'GLfloat'
+     1>c:\users\experimenter\desktop\computational_modelling_db\phantom_snooker\robot_snooker.cpp(814): warning C4305: 'initializing' : truncation from 'double' to 'GLfloat'
+     1>c:\users\experimenter\desktop\computational_modelling_db\phantom_snooker\robot_snooker.cpp(815): warning C4305: 'initializing' : truncation from 'double' to 'GLfloat'
+     1>c:\users\experimenter\desktop\computational_modelling_db\phantom_snooker\robot_snooker.cpp(815): warning C4305: 'initializing' : truncation from 'double' to 'GLfloat'
+     1>c:\users\experimenter\desktop\computational_modelling_db\phantom_snooker\robot_snooker.cpp(815): warning C4305: 'initializing' : truncation from 'double' to 'GLfloat'
+     1>c:\users\experimenter\desktop\computational_modelling_db\phantom_snooker\robot_snooker.cpp(820): warning C4305: 'initializing' : truncation from 'double' to 'GLfloat'
+     1>c:\users\experimenter\desktop\computational_modelling_db\phantom_snooker\robot_snooker.cpp(820): warning C4305: 'initializing' : truncation from 'double' to 'GLfloat'
+     1>c:\users\experimenter\desktop\computational_modelling_db\phantom_snooker\robot_snooker.cpp(820): warning C4305: 'initializing' : truncation from 'double' to 'GLfloat'
+     1>c:\users\experimenter\desktop\computational_modelling_db\phantom_snooker\robot_snooker.cpp(920): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\experimenter\desktop\computational_modelling_db\phantom_snooker\robot_snooker.cpp(921): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\experimenter\desktop\computational_modelling_db\phantom_snooker\robot_snooker.cpp(763): warning C4101: 'Exit' : unreferenced local variable
        Link:
-         All outputs are up-to-date.
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\experimenter\Desktop\computational_modelling_DB\Phantom_Snooker\Debug\Phantom_Snooker.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:"C:\Users\experimenter\Desktop\computational_modelling_DB\Phantom_Snooker\GLFW\lib-vc2010" /LIBPATH:"C:\Users\experimenter\Desktop\Simple OpenGL Image Library\projects\VC9\Debug" /LIBPATH:D:\vBot\Shared\lib /LIBPATH:C:\OpenHaptics\Academic\3.1\lib\Win32\DebugAcademicEdition /LIBPATH:C:\OpenHaptics\Academic\3.1\utilities\lib\Win32\DebugAcademicEdition glfw3dll.lib motor.lib nr.lib win626.obj winmm.lib oapi.lib opengl32.lib glu32.lib user32.lib gdi32.lib kernel32.lib glut32.lib glm.obj hd.lib hdu.lib pdi.lib SOIL.lib /NODEFAULTLIB:libc.lib /NODEFAULTLIB:MSVCRTD.lib /MANIFEST /ManifestFile:"Debug\Phantom_Snooker.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\experimenter\Desktop\computational_modelling_DB\Phantom_Snooker\Debug\Phantom_Snooker.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\experimenter\Desktop\computational_modelling_DB\Phantom_Snooker\Debug\Phantom_Snooker.lib" /MACHINE:X86 Debug\ROBOT_Snooker.obj
+     1>ROBOT_Snooker.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
+     1>hdu.lib(hduError.obj) : warning LNK4217: locally defined symbol _fprintf imported in function _hduPrintError
+     1>hdu.lib(hduError.obj) : warning LNK4204: 'C:\Users\experimenter\Desktop\computational_modelling_DB\Phantom_Snooker\Debug\vc100.pdb' is missing debugging information for referencing module; linking object as if no debug info
          Phantom_Snooker.vcxproj -> C:\Users\experimenter\Desktop\computational_modelling_DB\Phantom_Snooker\Debug\Phantom_Snooker.exe
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"C:\Users\experimenter\Desktop\computational_modelling_DB\Phantom_Snooker\Debug\Phantom_Snooker.exe;#1" /manifest Debug\Phantom_Snooker.exe.intermediate.manifest
        FinalizeBuildStatus:
          Deleting file "Debug\Phantom_Snooker.unsuccessfulbuild".
          Touching "Debug\Phantom_Snooker.lastbuildstate".
@@ -14,4 +39,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.06
+Time Elapsed 00:00:01.27

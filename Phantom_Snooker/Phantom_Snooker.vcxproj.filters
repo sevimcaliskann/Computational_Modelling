@@ -20,13 +20,34 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="img_test.bmp">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="left2.bmp">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="right2.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="left-Eye.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="right-Eye.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="l1.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="l2.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="r1.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="r2.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="leftEye.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="rightEye.bmp">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="left.bmp">
@@ -35,10 +56,46 @@
     <None Include="right.bmp">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="left3.bmp">
+    <None Include="leftBottom.bmp">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="right3.bmp">
+    <None Include="leftSpikes.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="rightBottom.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="rightSpikes.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="leftBottom2.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="leftCenter.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="leftTop.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="leftTop2.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="rightBottom2.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="rightCenter.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="rightTop.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="rightTop2.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="leftSmall.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="rightSmall.bmp">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

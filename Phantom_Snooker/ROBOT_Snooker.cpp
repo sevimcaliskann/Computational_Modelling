@@ -79,8 +79,8 @@ int hitcnt = 0;
 GLfloat x_min = -0.25f, x_max = 0.25f;
 GLfloat y_min = -0.25f, y_max = 0.25f;
 GLfloat z_min = -0.25f, z_max = 0.25f;
-GLfloat xrot = 0.5f, yrot = 0.5f, zrot = 0.5f;
-GLfloat xtrans = 0.0f, ytrans = 0.0f, ztrans = -5.0f;
+GLfloat xrot = 0.0f, yrot = 0.0f, zrot = 0.0f;
+GLfloat xtrans = 0.0f, ytrans = 0.0f, ztrans = 0.0f;
 GLfloat eyeOffset = 0.0f;
 GLfloat nearPlane = 0.5f, farPlane = 20.0f;
 
@@ -484,13 +484,19 @@ void DrawForTheEye(int eye, const GLuint &texture, const int &eyeOffs){
 	if(eye==1){
 		GRAPHICS_ViewCalib(eye);
 		m = CreateDefaultStereoParameters(600, 450, 100, 1, false, farPlane, nearPlane );
+		
+		
 	}
 	else{
 		GRAPHICS_ViewCalib(eye, 0.0);
 		m = CreateDefaultStereoParameters(600, 450, 100, 1, true, farPlane, nearPlane );
 	}
 
+	//glLoadMatrixf(m);
+	//glPushMatrix();
+	//glRotatef(90, 0.0f, 1.0f, 0.0f);
 	glLoadMatrixf(m);
+	glRotatef(-0, 0.0f, 0.0f, 1.0f);
 	glPushMatrix();
 	glBindTexture(GL_TEXTURE_2D, texture);		
 			
@@ -911,8 +917,8 @@ BOOL Exit;
 	glDepthFunc(GL_LEQUAL);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
   
-	isImageLoaded = LoadGLTexture("right3.bmp", texture1);
-	isImageLoaded = LoadGLTexture("left3.bmp", texture2);
+	isImageLoaded = LoadGLTexture("rightTop.bmp", texture1);
+	isImageLoaded = LoadGLTexture("leftTop.bmp", texture2);
 	if(isImageLoaded){
     glutDisplayFunc(GlutDisplay);
     glutIdleFunc(GlutIdle);
